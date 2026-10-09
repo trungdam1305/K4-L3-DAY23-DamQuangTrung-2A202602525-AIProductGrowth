@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Operating Dashboard — AutoResolve AI</title>
+<style>
+  @page {
+    size: A4 landscape;
+    margin: 8mm 12mm 8mm 12mm;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    background: #fff;
+    font-size: 11px;
+    line-height: 1.35;
+  }
+  .page {
+    width: 100%;
+    height: 100%;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+  .header {
+    border-bottom: 2px solid #0f172a;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
+  }
+  .title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .meta {
+    font-size: 10.5px;
+    color: #475569;
+    margin-top: 2px;
+  }
+  .north-star {
+    background: #f1f5f9;
+    border-left: 4px solid #0284c7;
+    padding: 4px 8px;
+    margin-bottom: 6px;
+    font-size: 10.5px;
+  }
+  .sec-title {
+    font-size: 11px;
+    font-weight: 800;
+    color: #0f172a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 4px 0 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sec-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #cbd5e1;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 5px;
+    font-size: 10px;
+  }
+  th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 700;
+    text-align: left;
+    padding: 3px 6px;
+    border-top: 1px solid #cbd5e1;
+    border-bottom: 1.5px solid #94a3b8;
+  }
+  td {
+    padding: 3px 6px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+  }
+  .tag {
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .tag-mh { background: #fce7f3; color: #be185d; }
+  .tag-bm { background: #e0f2fe; color: #0369a1; }
+  .tag-tb { background: #fef3c7; color: #b45309; }
+  .tag-stop { background: #fee2e2; color: #b91c1c; font-weight: 800; }
+  
+  .rules {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 5px 8px;
+    margin-bottom: 5px;
+    font-size: 9.8px;
+  }
+  .rule-item {
+    margin-bottom: 3px;
+    line-height: 1.3;
+  }
+  .rule-item:last-child { margin-bottom: 0; }
+  .rule-num {
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .gates table th { background: #f1f5f9; }
+  .callout-box {
+    background: #f8fafc;
+    border-left: 3px solid #64748b;
+    padding: 3px 8px;
+    font-size: 9.5px;
+    margin-top: 3px;
+    color: #334155;
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: #94a3b8;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 3px;
+    margin-top: 4px;
+  }
+
+  /* Page 2 Styles */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+  .calc-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 5px 8px;
+    font-size: 9.5px;
+  }
+  .calc-card h4 {
+    margin: 0 0 3px 0;
+    font-size: 10.5px;
+    color: #0f172a;
+    font-weight: 700;
+    border-bottom: 1px solid #cbd5e1;
+    padding-bottom: 2px;
+  }
+  .calc-code {
+    font-family: Consolas, monospace;
+    font-size: 9px;
+    color: #0f172a;
+    line-height: 1.35;
+    background: #fff;
+    padding: 4px 6px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+  }
+</style>
+</head>
+<body>
+
+<!-- TRANG 1: OPERATING DASHBOARD -->
+<div class="page">
+  <div>
+    <div class="header">
+      <div class="title">
+        <span>OPERATING DASHBOARD — AutoResolve AI</span>
+        <span style="font-size:11px;font-weight:600;color:#64748b;">K4 Track 1 · AI-in-Action · Day 23</span>
+      </div>
+      <div class="meta">
+        <strong>Mô hình:</strong> B2B (Partner-Led qua Haravan) &nbsp;|&nbsp; 
+        <strong>Cập nhật:</strong> 09/10/2026 &nbsp;|&nbsp; 
+        <strong>Học viên:</strong> Đàm Quang Trung — MSSV: 2A202602525 &nbsp;|&nbsp;
+        <strong>Trạng thái:</strong> Chuẩn bị pilot 5 shop kín (Chưa có số thực tế, không tô xanh giả tạo)
+      </div>
+    </div>
+
+    <div class="north-star">
+      <strong>NORTH STAR:</strong> <strong>Median TTFV (Time-to-First-Value)</strong> (từ khi shop cài app đến 20 ticket đêm đạt QA) &nbsp;|&nbsp; 
+      <strong>Hiện tại:</strong> <span style="color:#b45309;font-weight:700;">Chưa đo</span> &nbsp;|&nbsp; 
+      <strong>Mục tiêu:</strong> <strong>&le; 7 ngày</strong> (áp dụng khi cohort pilot &ge; 5 shop SME)
+    </div>
+
+    <!-- LEADING -->
+    <div class="sec-title">ĐÈN BÁO SỚM · Leading (Nhịp tuần — Báo trước 1–3 tháng)</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:26%;">Đèn</th>
+          <th style="width:10%;">Hiện tại</th>
+          <th style="width:36%;">Xanh / Vàng / Đỏ (Ngưỡng)</th>
+          <th style="width:10%;">Nguồn</th>
+          <th style="width:18%;">Báo trước cho</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Median TTFV</strong> ⭐</td>
+          <td style="color:#64748b;font-style:italic;">Chưa đo</td>
+          <td>🟢 &le; 7 ngày &nbsp;|&nbsp; 🟡 8 – 14 ngày &nbsp;|&nbsp; 🔴 &gt; 14 ngày</td>
+          <td><span class="tag tag-tb">[TB] baseline</span></td>
+          <td>POC&rarr;Paid (O) &amp; NRR (G)</td>
+        </tr>
+        <tr>
+          <td><strong>Containment Rate ca đêm (23h–02h)</strong></td>
+          <td style="color:#64748b;font-style:italic;">Chưa đo</td>
+          <td>🟢 &ge; 80,50% &nbsp;|&nbsp; 🟡 77,41% – &lt; 80,50% &nbsp;|&nbsp; 🔴 &lt; 77,41%</td>
+          <td><span class="tag tag-mh">[MH] hòa vốn</span></td>
+          <td>Chi phí HITL (L) &amp; GM (G)</td>
+        </tr>
+        <tr>
+          <td><strong>Chi phí AI &amp; HITL / Resolution</strong></td>
+          <td style="color:#64748b;font-style:italic;">Chưa đo</td>
+          <td>🟢 &le; $0,3168 (8.237đ) &nbsp;|&nbsp; 🟡 &gt; $0,3168–$0,3960 &nbsp;|&nbsp; 🔴 &gt; $0,3960</td>
+          <td><span class="tag tag-mh">[MH] GM 60/50%</span></td>
+          <td>Gross Margin ròng (G)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- OPERATING -->
+    <div class="sec-title">ĐÈN VẬN HÀNH · Operating (Nhịp tuần/tháng — Đòn bẩy trực tiếp)</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:26%;">Đèn</th>
+          <th style="width:10%;">Hiện tại</th>
+          <th style="width:36%;">Xanh / Vàng / Đỏ (Ngưỡng)</th>
+          <th style="width:10%;">Nguồn</th>
+          <th style="width:18%;">Báo trước cho</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Pilot Shop Activation Rate</strong> (&ge;50 ticket/m)</td>
+          <td style="color:#64748b;font-style:italic;">Chưa đo</td>
+          <td>🟢 &ge; 60,00% &nbsp;|&nbsp; 🟡 40,00% – &lt; 60,00% &nbsp;|&nbsp; 🔴 &lt; 40,00%</td>
+          <td><span class="tag tag-tb">[TB] baseline</span></td>
+          <td>POC&rarr;Paid (O) &amp; NRR (G)</td>
+        </tr>
+        <tr>
+          <td><strong>POC &rarr; Paid Conversion Rate</strong></td>
+          <td style="color:#64748b;font-style:italic;">Chưa đo</td>
+          <td>🟢 &ge; 48,58% &nbsp;|&nbsp; 🟡 24,29% – &lt; 48,58% &nbsp;|&nbsp; 🔴 &lt; 24,29%</td>
+          <td><span class="tag tag-mh">[MH] payback</span></td>
+          <td>Doanh thu mới &amp; CAC Payback (G)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- LAGGING -->
+    <div class="sec-title">ĐÈN KẾT QUẢ · Lagging (Nhịp tháng/quý — Bảng điểm tài chính)</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:26%;">Đèn</th>
+          <th style="width:10%;">Hiện tại</th>
+          <th style="width:36%;">Xanh / Vàng / Đỏ (Ngưỡng)</th>
+          <th style="width:10%;">Nguồn</th>
+          <th style="width:18%;">Tác động tài chính</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Gross Margin ròng</strong> (sau 20% rev-share)</td>
+          <td style="color:#64748b;font-style:italic;">Chưa đo</td>
+          <td>🟢 &ge; 60,00% &nbsp;|&nbsp; 🟡 50,00% – &lt; 60,00% &nbsp;|&nbsp; 🔴 &lt; 50,00%</td>
+          <td><span class="tag tag-bm">[BM] 27/08/26</span></td>
+          <td>Bảo vệ runway sống còn</td>
+        </tr>
+        <tr>
+          <td><strong>Net Revenue Retention (NRR)</strong></td>
+          <td style="color:#64748b;font-style:italic;">Chưa đo</td>
+          <td>🟢 &ge; 105,00% &nbsp;|&nbsp; 🟡 95,00% – &lt; 105,00% &nbsp;|&nbsp; 🔴 &lt; 95,00%</td>
+          <td><span class="tag tag-bm">[BM] 27/08/26</span></td>
+          <td>Sức sống &amp; tăng trưởng dài hạn</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- RULES -->
+    <div class="sec-title">5 LUẬT QUYẾT ĐỊNH (Ký hiệu ⏹ là luật DỪNG bắt buộc)</div>
+    <div class="rules">
+      <div class="rule-item">
+        <span class="rule-num">1. <span class="tag tag-stop">⏹ DỪNG ONBOARDING</span></span> 
+        <strong>NẾU</strong> TTFV &gt; 14 ngày <strong>TRONG</strong> 2 cohort liên tiếp <strong>VÀ</strong> &ge;5 shop/cohort 
+        <strong>THÌ</strong> tạm dừng nhận shop mới 14 ngày, rút gọn onboarding về 1 kịch bản tồn kho/vận đơn; 
+        <strong style="color:#dc2626;">KHÔNG THÌ</strong> cấm giảm giá $0,99 hoặc tặng ticket để bù cài đặt chậm.
+      </div>
+      <div class="rule-item">
+        <span class="rule-num">2. <span class="tag tag-stop">⏹ DỪNG SCALE</span></span> 
+        <strong>NẾU</strong> Containment ca đêm &lt; 77,41% <strong>TRONG</strong> 2 tuần <strong>VÀ</strong> volume &ge; 300 ticket 
+        <strong>THÌ</strong> đóng băng chiến dịch ads Haravan, giới hạn bot ở 3 intent chuẩn (&gt;90% conf), ca khó chuyển tin nhắn chờ; 
+        <strong style="color:#dc2626;">KHÔNG THÌ</strong> cấm cắt giảm QA/HITL để ép giảm chi phí giả tạo.
+      </div>
+      <div class="rule-item">
+        <span class="rule-num">3. <span class="tag tag-stop">⏹ DỪNG QUOTA</span></span> 
+        <strong>NẾU</strong> Chi phí AI &amp; HITL / job &gt; $0,3960 <strong>TRONG</strong> 2 tuần chốt chi phí <strong>VÀ</strong> &ge;5 shop hoạt động 
+        <strong>THÌ</strong> kích hoạt hard-cap tối đa 5 turn/session, cắt context prompt &lt; 1.500 token; 
+        <strong style="color:#dc2626;">KHÔNG THÌ</strong> cấm tăng giá đại trà lên khách hàng hiện hữu.
+      </div>
+      <div class="rule-item">
+        <span class="rule-num">4. SỬA PHỄU PILOT</span> 
+        <strong>NẾU</strong> POC &rarr; Paid &lt; 24,29% <strong>TRONG</strong> 2 cohort pilot đủ 14 ngày <strong>VÀ</strong> &ge;10 shop/cohort 
+        <strong>THÌ</strong> trực tiếp phỏng vấn 5 chủ shop rời bỏ, viết lại Evidence Pack v2 và làm lại bản tổng kết giá trị sau pilot; 
+        <strong style="color:#dc2626;">KHÔNG THÌ</strong> cấm kéo dài dùng thử miễn phí quá 14 ngày.
+      </div>
+      <div class="rule-item">
+        <span class="rule-num">5. <span class="tag tag-stop">⏹ DỪNG TÙY BIẾN</span></span> 
+        <strong>NẾU</strong> 1 shop chiếm &gt; 30% doanh thu <strong>TRONG</strong> 2 tháng đối soát liên tiếp 
+        <strong>THÌ</strong> đóng băng toàn bộ yêu cầu custom feature riêng từ shop này, dồn sprint tích hợp thêm 10 shop vừa và nhỏ; 
+        <strong style="color:#dc2626;">KHÔNG THÌ</strong> cấm ký cam kết SLA độc quyền hoặc sửa core pipeline theo logic một khách.
+      </div>
+    </div>
+
+    <!-- 90-DAY GATES -->
+    <div class="sec-title">CỔNG GÁC 90 NGÀY (Mốc ngày gốc: 09/10/2026)</div>
+    <table class="gates">
+      <thead>
+        <tr>
+          <th style="width:14%;">Mốc ngày</th>
+          <th style="width:25%;">Đúng một metric gác cổng</th>
+          <th style="width:23%;">Ngưỡng qua cổng</th>
+          <th style="width:23%;">Bằng chứng vật lý</th>
+          <th style="width:15%;">Nếu trượt</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>30 · 08/11/2026</strong></td>
+          <td>Tỷ lệ ticket ca đêm log đủ webhook &amp; đúng intent</td>
+          <td>&ge; 95,00% trên &ge; 5 shop pilot</td>
+          <td>Audit log webhook, SQL report, biên bản QA</td>
+          <td><strong>FIX</strong> webhook 14 ngày</td>
+        </tr>
+        <tr>
+          <td><strong>60 · 08/12/2026</strong></td>
+          <td>Median TTFV trên cohort shop pilot</td>
+          <td>&le; 7 ngày trên &ge; 10 shop SME</td>
+          <td>Cohort report, timestamp 20th_resolved</td>
+          <td><strong>PIVOT</strong> sau 1 FIX</td>
+        </tr>
+        <tr>
+          <td><strong>90 · 07/01/2027</strong></td>
+          <td>Containment Rate ca đêm &amp; POC&rarr;Paid</td>
+          <td>Containment &ge; 77,41% VÀ POC &ge; 24,29%</td>
+          <td>Báo cáo thanh toán Haravan, hóa đơn AI</td>
+          <td><strong>KILL</strong> nếu &lt; 77,41% sau FIX</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout-box">
+      <strong>KILL CRITERIA:</strong> Đến ngày <strong>07/01/2027</strong>, nếu Containment ca đêm vẫn <strong>&lt; 77,41%</strong> trên &ge; 500 ticket hoặc POC&rarr;Paid <strong>&lt; 24,29%</strong> trên &ge; 30 shop sau 1 vòng FIX, <strong>dừng triển khai dự án AutoResolve AI trên Haravan</strong>.<br>
+      <strong>CHƯA ĐO ĐƯỢC:</strong> Chưa có log webhook production, chưa có hóa đơn billing Haravan và lương HITL thực tế. Webhook tích hợp xong trước 16/10/2026, baseline TTFV có ngày 30/10/2026, baseline Containment có ngày 06/11/2026. Mọi ô trạng thái để <em>Chưa đo</em>. Xem Trang 2 để kiểm tra phép tính [MH].
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>AutoResolve AI · Đàm Quang Trung (2A202602525) · Lab Day 23</span>
+    <span>Trang 1 / 2 (Operating Dashboard)</span>
+  </div>
+</div>
+
+<!-- TRANG 2: PHỤ LỤC [MH] -->
+<div class="page">
+  <div>
+    <div class="header">
+      <div class="title">
+        <span>PHỤ LỤC [MH] | Cách tính ngưỡng — AUTORESOLVE AI</span>
+        <span style="font-size:11px;font-weight:600;color:#64748b;">Truy vết mô hình tài chính Day 22</span>
+      </div>
+      <div class="meta">
+        Bằng chứng phương pháp suy ngược ngưỡng [MH] từ mô hình Unit Economics và Cost/Job (day22_monetization_model.xlsx).
+      </div>
+    </div>
+
+    <!-- BẢNG GIẢ ĐỊNH ĐẦU VÀO -->
+    <div class="sec-title">BẢNG GIẢ ĐỊNH ĐẦU VÀO TÀI CHÍNH &amp; KỸ THUẬT (TRUY XUẤT TỪ LAB DAY 22)</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:25%;">Hạng mục</th>
+          <th style="width:25%;">Giá trị giả định cơ sở</th>
+          <th style="width:25%;">Hạng mục</th>
+          <th style="width:25%;">Giá trị giả định cơ sở</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Giá bán niêm yết (List Price)</strong></td>
+          <td><strong>$0,99 / resolution</strong> (25.740 ₫)</td>
+          <td><strong>ARPU dự kiến / shop / tháng</strong></td>
+          <td><strong>$200 / tháng</strong> (~202 resolutions)</td>
+        </tr>
+        <tr>
+          <td><strong>Tỷ lệ chia sẻ doanh thu Haravan</strong></td>
+          <td><strong>20,00%</strong> ($0,1980 / resolution)</td>
+          <td><strong>Cost/Job dự toán (82% Containment)</strong></td>
+          <td><strong>$0,2486 / job</strong> (6.464 ₫)</td>
+        </tr>
+        <tr>
+          <td><strong>Doanh thu ròng nhận về</strong></td>
+          <td><strong>$0,7920 / resolution</strong> (20.592 ₫)</td>
+          <td><strong>Chi phí HITL Escalation / ticket</strong></td>
+          <td><strong>$0,9000 / ca</strong> (6 phút &times; $9/giờ)</td>
+        </tr>
+        <tr>
+          <td><strong>Gross Margin ròng mục tiêu / sàn</strong></td>
+          <td><strong>60,00% / 50,00%</strong></td>
+          <td><strong>Chi phí pilot phân bổ / shop</strong></td>
+          <td><strong>$200 / shop</strong> (50 ticket free + CS)</td>
+        </tr>
+        <tr>
+          <td><strong>Breakeven Containment ròng</strong></td>
+          <td><strong>77,41%</strong> (sàn hòa vốn)</td>
+          <td><strong>Payback mục tiêu / sàn SMB</strong></td>
+          <td><strong>3 tháng / 6 tháng</strong></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- 4 KHỐI PHÉP TÍNH -->
+    <div class="grid-2">
+      <!-- KHỐI 1 -->
+      <div class="calc-card">
+        <h4>1. CHI PHÍ AI &amp; HITL / RESOLUTION — Báo sớm Gross Margin</h4>
+        <div class="calc-code">
+Doanh thu ròng = $0,99 × (1 - 20%) = $0,7920 (20.592 ₫)<br>
+- Tại GM ròng 60% (Xanh):<br>
+  COGS_xanh ≤ $0,7920 × (1 - 60%) = <strong>$0,3168 / job</strong> (8.237 ₫)<br>
+  Tỷ lệ chi phí / Giá niêm yết = $0,3168 / $0,99 = 32,00%<br>
+- Tại GM ròng 50% (Sàn Đỏ):<br>
+  COGS_đỏ > $0,7920 × (1 - 50%) = <strong>$0,3960 / job</strong> (10.296 ₫)<br>
+  Tỷ lệ chi phí / Giá niêm yết = $0,3960 / $0,99 = 40,00%<br>
+→ Ngưỡng: 🟢 ≤ $0,3168 &nbsp;|&nbsp; 🟡 > $0,3168–$0,3960 &nbsp;|&nbsp; 🔴 > $0,3960
+        </div>
+      </div>
+
+      <!-- KHỐI 2 -->
+      <div class="calc-card">
+        <h4>2. CONTAINMENT RATE CA ĐÊM — Điểm hòa vốn sau Rev-Share</h4>
+        <div class="calc-code">
+Trong 1.000 ticket: AI xong = 1.000×R; Escalation = 1.000×(1-R)<br>
+Net Rev = 1.000×R × $0,7920; Cost công nghệ = $26,87<br>
+Escalation Cost = 1.000×(1-R) × $0,90; QA Cost = 1.000×R × $0,015<br>
+- Tại sàn GM 50%: 396×R = 26,87 + 900 - 885×R ⇒ R = 72,35%<br>
+- Đệm rủi ro &amp; chi phí quản lý cơ sở (Sheet 2_Pricing B60):<br>
+  Ngưỡng hòa vốn dòng tiền hoạt động ròng = <strong>77,41%</strong><br>
+- Để đạt GM mục tiêu 60%: R_target = 77,12% + sai số = <strong>80,50%</strong><br>
+→ Ngưỡng: 🟢 ≥ 80,50% &nbsp;|&nbsp; 🟡 77,41%–<80,50% &nbsp;|&nbsp; 🔴 < 77,41%
+        </div>
+      </div>
+
+      <!-- KHỐI 3 -->
+      <div class="calc-card">
+        <h4>3. POC → PAID CONVERSION — Suy từ CAC Payback</h4>
+        <div class="calc-code">
+ARPU = $200/tháng; GM ròng = 68,61%<br>
+Lãi gộp hàng tháng = $200 × 68,61% = $137,22 / shop / tháng<br>
+Chi phí phục vụ 1 pilot shop (gồm 50 ticket free + setup) = $200<br>
+CAC = $200 / p (với p là tỷ lệ POC→Paid)<br>
+- Payback ≤ 3 tháng (Xanh): p ≥ $200 / (3 × $137,22) = <strong>48,58%</strong><br>
+- Payback ≤ 6 tháng (Sàn SMB): p ≥ $200 / (6 × $137,22) = <strong>24,29%</strong><br>
+→ Ngưỡng: 🟢 ≥ 48,58% &nbsp;|&nbsp; 🟡 24,29%–<48,58% &nbsp;|&nbsp; 🔴 < 24,29%
+        </div>
+      </div>
+
+      <!-- KHỐI 4 -->
+      <div class="calc-card">
+        <h4>4. TUỔI THỌ DỰ BÁO, LTV/CAC &amp; ĐỐI CHIẾU BENCHMARK</h4>
+        <div class="calc-code">
+- Tuổi thọ dự báo SMB: 12 tháng ⇒ Monthly churn = 1/12 = 8,33%<br>
+- LTV = 12 tháng × $137,22 = $1.646,64 / shop trả phí<br>
+- Tại p = 48,58%: CAC = $200 / 0,4858 = $411,69 ⇒ <strong>LTV/CAC = 4,00×</strong> (Xanh)<br>
+- Tại p = 24,29%: CAC = $200 / 0,2429 = $823,38 ⇒ <strong>LTV/CAC = 2,00×</strong> (Sàn)<br>
+Benchmark: ICONIQ 2026 (POC→Paid ~50%, GM 53%); Benchmarkit (NRR 101%).<br>
+Toàn bộ số đo hiện tại để <strong>Chưa đo</strong>, đối chiếu cập nhật khi chạy pilot.
+        </div>
+      </div>
+    </div>
+
+    <div class="callout-box" style="margin-top:2px;">
+      <strong>GHI CHÚ PHƯƠNG PHÁP:</strong> [MH] là các ngưỡng suy ra từ ràng buộc mô hình tài chính và cấu trúc chi phí Cost/Job Day 22 của chính học viên Đàm Quang Trung, không phải số benchmark [BM] trích dẫn từ bên ngoài hay số baseline [TB] tự đo. Khi triển khai pilot thực tế có số liệu, các tham số đầu vào sẽ được hiệu chỉnh theo đúng dữ liệu quan sát.
+    </div>
+  </div>
+
+  <div class="footer">
+    <span>AutoResolve AI · Đàm Quang Trung (2A202602525) · Lab Day 23</span>
+    <span>Trang 2 / 2 (Phụ lục phép tính [MH])</span>
+  </div>
+</div>
+
+</body>
+</html>
